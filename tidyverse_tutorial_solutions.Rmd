@@ -112,7 +112,9 @@ length(unique(iris$Species)) # number of species
 Piped version:
 
 ```{r}
-
+iris$Species %>% 
+  unique %>%
+  length
 ```
 
 ## `ggplot2` and tidy data
@@ -213,7 +215,11 @@ sgf %>%
 **Exercise.** Filter out only the "face" trial in the "Label" condition.
 
 ```{r}
+sgf %>%
+  filter(condition == "Label", 
+         item == "faces")
 
+sgf[sgf$condition == "Label" & sgf$item == "faces", ] # all the columns
 ```
 
 There are also times when you want to add or remove *columns*. You might want to remove columns to simplify the dataset. There's not much to simplify here, but if you wanted to do that, the verb is `select`. 
@@ -316,7 +322,14 @@ ggplot(sgf_means,
 
 ```{r}
 # exercise
+sgf_sub_means <- sgf %>%
+  group_by(age_group, condition, subid) %>%
+  summarise(correct = mean(correct)) 
 
+sgf_grand_means <- sgf_sub_means %>%
+  group_by(age_group, condition) %>%
+  summarise(mean_correct = mean(correct), 
+            sd_correct = sd(correct))
 ```
 
 <!-- ----------------------------------------------------------------------- -->
@@ -369,11 +382,14 @@ There are lots of flexible ways to specify these columns - you can enumerate the
 > **Exercise.** Take the Sklar data from above, where each column is a separate subject, and `gather` it so that it's a tidy dataset. What challenges come up? 
 
 ```{r}
-
+sklar
 ```
 
 ```{r}
+sklar_tidy <- sklar %>%
+  gather(subid, rt, 8:28)
 
+sklar_tidy
 ```
 
 Let's also go back and tidy an easier one: `iris`.
@@ -441,7 +457,13 @@ This is a bit useless, because the variability is so high. So let's summarise!
 HINT: `is.na(x)` is useful for filtering.
 
 ```{r}
-
+# View(ws)
+ws_sex <- ws %>%
+  filter(!is.na(sex)) %>%
+  group_by(age, sex) %>%
+  summarise(production = mean(production),
+            production_sd = sd(production)) 
+ws_sex
 ```
 
 Now plot:
